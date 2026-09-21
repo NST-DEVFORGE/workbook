@@ -1,6 +1,6 @@
 # Your Name
 
-- **GitHub:** @your-github-username
+- **GitHub:** @skmdfirdousf34
 - **Batch:** 2026
-- **I'm here to:** one honest line about what you want from open source
-- **One thing I've built:** a link, or "nothing yet" — both are fine
+- **I'm here to:** learn new things and explore the open source community also want to crack gsoc.
+- **One thing I've built:** skmdfirdous.vercel.app
