@@ -1,4 +1,4 @@
-# Your Name
+# kunal singh parmar
 
 - **GitHub:** @kunalsinghparmar13
 - **Batch:** 2026
