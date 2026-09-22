@@ -1,4 +1,4 @@
-# Samyak jain
+# SAMYAK JAIN
 
 - **GitHub:** @ritujain8638-source
 - **Batch:** 2026

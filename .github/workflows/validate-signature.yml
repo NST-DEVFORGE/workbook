@@ -61,7 +61,10 @@ jobs:
           [ "$(git rev-parse refs/remotes/pr/head)" = "$HEAD_SHA" ] || fail "The PR changed while this check was starting. Push again or re-run the check."
 
           expected="signatures/${AUTHOR}.md"
-          changed="$(git diff --name-status "$BASE_SHA" "$HEAD_SHA")"
+          # Three dots: compare against where the student's branch started, as the PR's
+          # "Files changed" tab does. Two dots would count every signature merged into
+          # main since they forked as a change of theirs.
+          changed="$(git diff --name-status "${BASE_SHA}...${HEAD_SHA}")"
           echo "Files changed in this PR:"
           printf '%s\n' "$changed" | while IFS= read -r line; do echo "  $(safe "$line")"; done
 
@@ -174,7 +177,10 @@ jobs:
               await github.rest.pulls.merge({
                 owner, repo, pull_number: pr.number,
                 sha: pr.head.sha, // only the exact commit that passed the check
-                merge_method: "merge",
+                // Squash: one new commit on top of main with only the signature. A merge
+                // commit from a fork made before a workflow change would carry that change
+                // in, and GitHub refuses workflow edits from this token.
+                merge_method: "squash",
                 commit_title: `Sign the workbook: ${name || user} (#${pr.number})`,
               });
               merged = true;
