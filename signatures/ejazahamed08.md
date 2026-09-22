@@ -1,4 +1,4 @@
-EJAZ AHAMED KHAN
+# EJAZ AHAMED KHAN
 
 - **GitHub:** @ejazahamed08
 - **Batch:** 2026
