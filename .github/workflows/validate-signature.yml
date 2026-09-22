@@ -61,7 +61,10 @@ jobs:
           [ "$(git rev-parse refs/remotes/pr/head)" = "$HEAD_SHA" ] || fail "The PR changed while this check was starting. Push again or re-run the check."
 
           expected="signatures/${AUTHOR}.md"
-          changed="$(git diff --name-status "$BASE_SHA" "$HEAD_SHA")"
+          # Three dots: compare against where the student's branch started, as the PR's
+          # "Files changed" tab does. Two dots would count every signature merged into
+          # main since they forked as a change of theirs.
+          changed="$(git diff --name-status "${BASE_SHA}...${HEAD_SHA}")"
           echo "Files changed in this PR:"
           printf '%s\n' "$changed" | while IFS= read -r line; do echo "  $(safe "$line")"; done
 
