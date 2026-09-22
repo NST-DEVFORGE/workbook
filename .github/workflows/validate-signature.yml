@@ -177,7 +177,10 @@ jobs:
               await github.rest.pulls.merge({
                 owner, repo, pull_number: pr.number,
                 sha: pr.head.sha, // only the exact commit that passed the check
-                merge_method: "merge",
+                // Squash: one new commit on top of main with only the signature. A merge
+                // commit from a fork made before a workflow change would carry that change
+                // in, and GitHub refuses workflow edits from this token.
+                merge_method: "squash",
                 commit_title: `Sign the workbook: ${name || user} (#${pr.number})`,
               });
               merged = true;
