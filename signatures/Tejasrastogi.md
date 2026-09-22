@@ -1,4 +1,4 @@
-# Tejas Rastogi
+# TEJAS RASTOGI
 
 - **GitHub:** @Tejasrastogi
 - **Batch:** 2026
