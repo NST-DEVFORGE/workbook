@@ -1,6 +1,6 @@
-# Your Name
+# Divyansh Kushwaha
 
-- **GitHub:** @your-github-username
+- **GitHub:** @divyanshkush437-source
 - **Batch:** 2026
-- **I'm here to:** one honest line about what you want from open source
-- **One thing I've built:** a link, or "nothing yet" — both are fine
+- **I'm here to:** i am here to buid something and gain something from opensource .
+- **One thing I've built:** i am exploring rightnow
