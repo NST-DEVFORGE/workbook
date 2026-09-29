@@ -1,4 +1,4 @@
-# Your Name
+# Konduru Lakshmi Sai Praneeth
 
 - **GitHub:** @SaiPraneeth63
 - **Batch:** 2026
