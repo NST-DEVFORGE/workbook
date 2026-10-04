@@ -54,7 +54,10 @@ Then open it and fill it in:
 - **One thing I've built:** a link, or "nothing yet" — both are fine
 ```
 
-Keep the `- **GitHub:** @username` line exactly as shown. The automated check reads it.
+The two things most people get wrong:
+
+- **`# Your Name` is a placeholder.** Replace *Your Name* with your real name and keep the `# `, for example `# Asha Rao`.
+- **Keep the `@`.** The line must read `- **GitHub:** @your-username`, exactly as shown. The automated check reads it.
 
 ### 5. Commit and push
 
@@ -74,22 +77,24 @@ Go to your fork on GitHub and click **Compare & pull request**. Check that:
 
 Fill in the PR template and open the PR.
 
-### 7. Wait for the checks and a review
+### 7. The bot checks it, then merges it
 
-- An automated check (**Validate signature**) runs on every PR. If it fails, open the check's log. It tells you exactly what to fix.
-- Post your PR link in the club group and ask a senior member to review it.
+Within a minute of opening your PR, the **Validate signature** check runs, and the workbook bot comments on your PR:
 
-### 8. Respond to the review on the *same* PR
+- **Something to fix?** The comment lists *every* problem and how to fix it.
+- **All good?** The bot merges your PR automatically and leaves a few polish tips for next time.
 
-Make the requested changes on the same branch, then commit and push. The PR updates by itself.
+### 8. Fix problems on the *same* PR
+
+Fix what the bot's comment lists, on the same branch, then commit and push. The check re-runs by itself and the comment updates.
 
 ```bash
 git add .
-git commit -m "Address review"
+git commit -m "Fix signature"
 git push
 ```
 
-> ⚠️ Do **not** close the PR and open a new one. Pushing a follow-up commit is part of what this milestone teaches.
+> ⚠️ Do **not** close the PR and open a new one. Push to the same branch.
 
 ### 9. Merged? Log it on the portal
 
@@ -101,9 +106,8 @@ Copy your PR URL (`https://github.com/NST-DEVFORGE/workbook/pull/<number>`), pas
 
 - [ ] You worked on a branch, not on `main`, and your PR shows **one file changed**
 - [ ] The **Validate signature** check is green
-- [ ] A senior member left at least one review comment
-- [ ] You pushed a follow-up commit that addressed it (not a new PR)
-- [ ] Merged
+- [ ] The bot merged your PR
+- [ ] You submitted it on the portal, with your reflection, and a council member signed it off
 
 ## Rules for this repo
 
@@ -123,4 +127,4 @@ Copy your PR URL (`https://github.com/NST-DEVFORGE/workbook/pull/<number>`), pas
 
 ---
 
-Maintained by [DevForge](https://github.com/NST-DEVFORGE). Reviews come from senior members of the club.
+Maintained by [DevForge](https://github.com/NST-DEVFORGE). Signatures are checked and merged by the workbook bot; reflections are signed off by the governance council.

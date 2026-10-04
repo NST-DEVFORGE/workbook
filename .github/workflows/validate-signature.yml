@@ -1,52 +1,76 @@
 name: Validate signature
 
+# pull_request_target so every student's check runs the moment the PR opens,
+# with no maintainer clicking "Approve and run" for first-time contributors.
+#
+# That trigger runs with this repo's permissions, so nothing here ever checks
+# out, installs or executes anything from the PR. Both jobs check out the base
+# branch — this repo's own code — and read the PR's signature file as data.
+#
+# Keep this file as small as it can be. GitHub treats a pull request whose
+# branch carries an older copy of a workflow file as one that "modifies
+# workflows", and then refuses to let GITHUB_TOKEN merge it, which strands
+# every fork made before the change. The logic lives in .github/scripts/,
+# which carries no such restriction:
+#
+#   .github/scripts/validate-signature.sh  the check
+#   .github/scripts/workbook-bot.js        the comment and the merge
 on:
-  pull_request:
+  pull_request_target:
     branches: [main]
+    types: [opened, synchronize, reopened]
 
-permissions:
-  contents: read
+# One run per PR at a time; a newer push cancels the older check.
+concurrency:
+  group: signature-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
 
 jobs:
+  # The required status check. Read-only.
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      problems: ${{ steps.check.outputs.problems }}
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check the PR adds exactly one valid signature
+        id: check
         env:
           AUTHOR: ${{ github.event.pull_request.user.login }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          set -euo pipefail
-          fail() { echo "::error::$1"; exit 1; }
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/validate-signature.sh
 
-          expected="signatures/${AUTHOR}.md"
-          changed="$(git diff --name-status "$BASE_SHA" "$HEAD_SHA")"
-          echo "Files changed in this PR:"
-          echo "$changed"
+  # Comments on the PR and, when the check passed, merges it.
+  bot:
+    needs: validate
+    if: always() && needs.validate.result != 'cancelled' && needs.validate.result != 'skipped'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          sparse-checkout: .github/scripts
+          persist-credentials: false
 
-          count="$(printf '%s\n' "$changed" | grep -c . || true)"
-          [ "$count" -eq 1 ] || fail "This PR changes $count files. It should change exactly one: $expected. If you see other people's files, you committed on main — see 'Stuck?' in the README."
-
-          status="$(printf '%s' "$changed" | cut -f1)"
-          path="$(printf '%s' "$changed" | cut -f2)"
-          [ "$path" = "$expected" ] || fail "Expected your file at '$expected' but found '$path'. The filename must be your GitHub username exactly (case matters)."
-          case "$status" in A|M) ;; *) fail "Your signature file should be added, not deleted or renamed (git status: $status)." ;; esac
-
-          [ -s "$path" ] || fail "$path is empty. Copy signatures/_template.md and fill it in."
-          head -n1 "$path" | grep -Eq '^# .+' || fail "The first line of $path should be '# Your Name'."
-          grep -q '^# Your Name$' "$path" && fail "Replace '# Your Name' with your actual name."
-
-          grep -Fqix -- "- **GitHub:** @${AUTHOR}" "$path" \
-            || fail "$path needs the line '- **GitHub:** @${AUTHOR}' — it must match the account that opened this PR."
-
-          for field in "Batch" "I'm here to" "One thing I've built"; do
-            grep -Fq -- "- **${field}:**" "$path" || fail "$path is missing the '- **${field}:**' line from the template."
-          done
-          grep -Fq "one honest line about what you want" "$path" && fail "You left the template text in 'I'm here to'. Write your own line."
-
-          echo "✅ Signature looks good. Now ask a senior member for a review."
+      - uses: actions/github-script@v7
+        env:
+          RESULT: ${{ needs.validate.result }}
+          PROBLEMS: ${{ needs.validate.outputs.problems }}
+        with:
+          script: |
+            const run = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/workbook-bot.js`);
+            await run({ github, context, core });
