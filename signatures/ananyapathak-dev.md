@@ -1,4 +1,3 @@
-
 # Ananya Pathak
 
 - **GitHub:** @ananyapathak-dev
